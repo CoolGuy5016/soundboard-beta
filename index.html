@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meme Soundboard</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#101114;color:white}
+header{padding:24px 18px;text-align:center;background:linear-gradient(135deg,#6d35ff,#ff3f86)}
+header h1{margin:0;font-size:32px}header p{margin:7px 0 0;opacity:.9}
+main{max-width:1000px;margin:auto;padding:20px}.toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+input{flex:1;min-width:180px;padding:13px 15px;border-radius:12px;border:1px solid #383a42;background:#1c1e23;color:white;font-size:16px}
+button{border:0;border-radius:12px;padding:12px 17px;background:#743cff;color:#fff;font-weight:bold;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:15px}
+.card{background:#1b1d22;border:1px solid #30323a;border-radius:17px;padding:17px}
+.card h3{margin:0 0 14px}.play{width:100%;background:#2c2f38}
+.add{min-height:145px;display:flex;align-items:center;justify-content:center;color:#bbb;cursor:pointer;border:1px dashed #575b68}
+.badge{display:inline-block;background:#292c35;color:#bbb;border-radius:20px;padding:6px 10px;font-size:12px;margin-bottom:15px}
+.overlay,.add-modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
+.popup,.add-box{width:min(470px,100%);background:#1d1f25;border:1px solid #3b3e48;border-radius:22px;padding:28px;text-align:center;box-shadow:0 20px 70px #0009}
+.popup .icon{font-size:48px}.popup h2{margin:8px 0 13px}.popup p{line-height:1.55;color:#d4d5da;margin-bottom:22px}
+.hidden{display:none!important}.add-box{text-align:left}.add-box h2{margin-top:0}.add-box input{width:100%;margin:7px 0 12px}.actions{display:flex;justify-content:flex-end;gap:10px}.secondary{background:#353841}
+</style>
+</head>
+<body>
+<header><h1>Meme Soundboard 🔊</h1><p>Upload your own sound, then play others</p></header>
+<main>
+<div class="toolbar"><input id="search" placeholder="🔎 Search sounds..." oninput="render()"><button onclick="openAdd()">➕ Add Sound</button></div>
+<div class="grid" id="grid"></div>
+</main>
+
+<div class="overlay" id="betaPopup">
+<div class="popup">
+<div class="icon">🔊</div>
+<h2>Beta Version</h2>
+<p>This is a beta version of Meme Soundboard - Add your own sound. Full version will release soon. Check Meme Soundboard App for updates.</p>
+<button onclick="closeBeta()">OK</button>
+</div>
+</div>
+
+<div class="add-modal hidden" id="addModal">
+<div class="add-box">
+<h2>➕ Add your own sound</h2>
+<p style="color:#aaa">This is a mockup, so the upload is simulated.</p>
+<input id="soundName" placeholder="Sound name">
+<input id="soundFile" type="file" accept="audio/*">
+<div class="actions"><button class="secondary" onclick="closeAdd()">Cancel</button><button onclick="addSound()">Add Sound</button></div>
+</div>
+</div>
+
+<script>
+let sounds=[{name:"Vine Boom"},{name:"Metal Pipe"},{name:"Airhorn"},{name:"Among Us"},{name:"Windows Error"},{name:"Bruh"},{name:"Roblox Oof"},{name:"Suspense"}];
+
+function closeBeta(){document.getElementById("betaPopup").classList.add("hidden")}
+function openAdd(){document.getElementById("addModal").classList.remove("hidden")}
+function closeAdd(){document.getElementById("addModal").classList.add("hidden")}
+function addSound(){
+ const name=document.getElementById("soundName").value.trim(),file=document.getElementById("soundFile").files[0];
+ if(!name){alert("Please enter a sound name.");return}
+ sounds.unshift({name,file});document.getElementById("soundName").value="";document.getElementById("soundFile").value="";closeAdd();render()
+}
+function playSound(s){
+ if(s.file){const a=new Audio(URL.createObjectURL(s.file));a.play().catch(()=>alert("This sound could not be played."))}
+ else alert("🔊 Demo sound: "+s.name)
+}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const grid=document.getElementById("grid");
+ const filtered=sounds.filter(s=>s.name.toLowerCase().includes(q));
+ grid.innerHTML=filtered.map((s,i)=>'<div class="card"><span class="badge">🌍 Shared sound</span><h3>'+escapeHtml(s.name)+'</h3><button class="play" onclick="playSound(sounds['+sounds.indexOf(s)+'])">▶️ PLAY</button></div>').join("");
+ grid.innerHTML+='<div class="card add" onclick="openAdd()">➕ Add your own sound</div>';
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+render();
+</script>
+</body>
+</html>
