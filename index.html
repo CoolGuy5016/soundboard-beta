@@ -61,7 +61,7 @@ function addSound(){
 }
 function playSound(s){
  if(s.file){const a=new Audio(URL.createObjectURL(s.file));a.play().catch(()=>alert("This sound could not be played."))}
- else alert("🔊 Demo sound: "+s.name)
+ else alert("There are no sounds yet! Sound: "+s.name)
 }
 function render(){
  const q=document.getElementById("search").value.toLowerCase();
